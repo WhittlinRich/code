@@ -55,3 +55,4 @@ print("Your score: {0} out of {1}".format(totalCorrect, totalQuestions))
 print(round((totalCorrect/totalQuestions) * 100), "%")
 if(totalCorrect == totalQuestions):
 	print("Perfect score!")
+	
