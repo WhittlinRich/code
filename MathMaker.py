@@ -4,25 +4,41 @@ import console
 console.set_color(0.0, 0.0, 0.0)
 print('\n\nSolve math problems.')
 
-totalQuestions = 4
+totalCorrect = 0
+totalWrong = 0
+totalQuestions = 10
 userInput = input("How many would you like? ")
 if userInput.isdigit():
 	totalQuestions = int(userInput)
 
-totalCorrect = 0
-totalWrong = 0
+
+userInput = input("Select operation: + or - ")
+if userInput == "-":
+	sign = "-"
+else:
+	sign = "+"
+
 
 minRangeTop = 1
 maxRangeTop = 10
 minRangeBot = 1
 maxRangeBot = 10
 
-sign = "+"
+userInput = input("Lowest number? ")
+if userInput.isdigit():
+	minRangeTop = minRangeBot = int(userInput)
+
+userInput = input("Highest number? ")
+if userInput.isdigit():
+	maxRangeTop = maxRangeBot = int(userInput)
 
 
 for i in range(totalQuestions):
-	randomTop = random.randrange(minRangeTop, maxRangeTop + 1)
-	randomBottom = random.randrange(minRangeBot, maxRangeBot + 1)
+	randomBottom = random.randint(minRangeBot, maxRangeBot)
+	if sign == '-':
+		minRangeTop = randomBottom
+	randomTop = random.randint(minRangeTop, maxRangeTop)	
+	
 	result = eval(str(randomTop) + " " + sign + " " + str(randomBottom))
 	
 	padding = "   "
@@ -55,4 +71,3 @@ print("Your score: {0} out of {1}".format(totalCorrect, totalQuestions))
 print(round((totalCorrect/totalQuestions) * 100), "%")
 if(totalCorrect == totalQuestions):
 	print("Perfect score!")
-	
