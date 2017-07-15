@@ -48,26 +48,65 @@ def drawNumbers():
 		width, height = canvas.get_text_size(number, fontName, fontSize)
 		hour = i
 		angle = -2 * pi / 12.0 * (hour - 3)
-		length = 130
+		length = clockWidth * 0.43
 		rads = radians(angle)
 		x = int(cos(angle) * length) + centerX
 		y = int(sin(angle) * length) + centerY
 		canvas.draw_text(number, x - width/2, y - height/2, fontName, fontSize)
 		canvas.restore_gstate()
+		
+def drawMajorTickmarks2():
+	for i in range(12):
+		canvas.save_gstate()
+		canvas.set_fill_color(0.3, 0.3, 0.3, 0.6)		
+		width = height = 5
+		angle = -2 * pi / 12.0 * (i - 3)
+		length = clockWidth * 0.52
+		rads = radians(angle)
+		x = int(cos(angle) * length) + centerX
+		y = int(sin(angle) * length) + centerY
+		canvas.draw_rect(x - width/2, y - height/2, width, height)
+		canvas.restore_gstate()		
 
-						
+
+def drawMajorTickmarks():
+	for i in range(12):
+		canvas.save_gstate()
+		canvas.translate(centerX, centerY)
+		canvas.rotate(-2 * pi / 12.0 * i)
+		canvas.set_fill_color(0.4, 0.4, 0.4, 0.6)
+		width = 2
+		height = 7
+		canvas.set_line_width(3)
+		canvas.draw_rect(-width/2, clockWidth * 0.505, width, height)
+		canvas.restore_gstate()
+		
+def drawMinorTickmarks():
+	for i in range(60):
+		canvas.save_gstate()
+		canvas.translate(centerX, centerY)
+		canvas.rotate(-2 * pi / 60.0 * i)
+		canvas.set_fill_color(0.4, 0.4, 0.4, 0.6)
+		width = 1
+		height = 5
+		canvas.set_line_width(1)
+		canvas.draw_rect(-width/2, clockWidth * 0.505, width, height)
+		canvas.restore_gstate()		
+				
+								
 def drawHand(width, length, angle):
 	rads = radians(angle)
 	endX = int(cos(angle) * length) + centerX
 	endY = int(sin(angle) * length) + centerY
+	canvas.save_gstate()
 	canvas.set_stroke_color(0.0, 0.0, 0.0, 0.6)
 	canvas.set_line_width(width)
 	canvas.draw_line(centerX, centerY, endX, endY)			
-
+	canvas.restore_gstate()
 
 def setTime(hour, minute):
-	hourHandLength = clockWidth * 0.28 #90
-	minuteHandLength = clockWidth * 0.36 #112
+	hourHandLength = clockWidth * 0.33 #90
+	minuteHandLength = clockWidth * 0.48 #112
 	
 	hour += minute / 60
 	hourAngle = -2 * pi / 12.0 * (hour - 3)
@@ -82,20 +121,29 @@ def setTime(hour, minute):
 totalCorrect = 0
 totalWrong = 0
 totalQuestions = 5
+minuteStep = 5
+
 userInput = input("How many would you like? ")
 if userInput.isdigit():
 	totalQuestions = int(userInput)
+
+userInput = input("Increments of 1 or 5? ")
+if userInput.isdigit() and int(userInput) == 1:
+	minuteStep = 1
 
 for i in range(totalQuestions):
 	
 	drawClockBackground()
 	drawNumbers()
+	drawMajorTickmarks()
+	drawMinorTickmarks()
 	
 	hour = random.randint(1, 12)
-	minute = random.randrange(0, 59, 5)
+	minute = random.randrange(0, 59, minuteStep)
 	setTime(hour, minute)
 	#setTime(7, 45)	
 	
+
 	userInput = input("What time is it? ")
 	if userInput == str(hour) + ":" + str(minute).zfill(2):
 		totalCorrect += 1
