@@ -3,65 +3,72 @@ import random
 from math import pi
 from math import sin, cos, radians
 
+print('\nTelling Time.')
 
 w = h = 500
 canvas.set_size(w, h)
-originX = w/2
-originY = h/2
-
-canvas.set_fill_color(0.8, 0.6, 0.1)
+clockWidth = clockHeight = 300
+centerX = w/2
+centerY = h/2
+clockX = centerX - clockWidth/2
+clockY = centerY - clockHeight/2
 border = 10
-canvas.fill_ellipse(border, border, w - border*2, h - border*2)
-canvas.set_fill_color(1.0, 0.8, 0.3)
-canvas.fill_ellipse(15, 15, w-30, h-30)
-canvas.set_fill_color(0.0, 0.0, 0.0)
-canvas.fill_ellipse(originX - 5, originY - 5, 10, 10)
-
-for i in range(12):
-	canvas.save_gstate()
-	canvas.translate(250, 250)
-	canvas.rotate(-2 * pi / 12.0 * i)
-	canvas.set_fill_color(0.3, 0.3, 0.3, 0.6)
-	fontSize = 40
-	fontName = 'Helvetica-Bold'
-	number = str(12 if i == 0 else i)
-	width, height = canvas.get_text_size(number, fontName, fontSize)
-	canvas.draw_text(number, -width/2, 190, fontName, fontSize)
-	canvas.restore_gstate()
 
 
+def drawClockBackground():
+	canvas.set_fill_color(0.8, 0.6, 0.1)
+	canvas.fill_ellipse(clockX - border, clockY - border, clockWidth + border*2, clockHeight + border*2)
+	canvas.set_fill_color(1.0, 0.8, 0.3)
+	canvas.fill_ellipse(clockX, clockY, clockWidth, clockHeight)
+	canvas.set_fill_color(0.0, 0.0, 0.0)
+	canvas.fill_ellipse(centerX - 5, centerY - 5, 10, 10)
+		
 
-'''
-for i in range(12):
-	canvas.save_gstate()
-	canvas.set_fill_color(0.3, 0.3, 0.3, 0.6)
-	fontSize = 40
-	fontName = 'Helvetica-Bold'
-	number = str(12 if i == 0 else i)
-	width, height = canvas.get_text_size(number, fontName, fontSize)
-	hour = i
-	angle = -2 * pi / 12.0 * (hour - 3)
-	length = 210
-	rads = radians(angle)
-	x = int(cos(angle) * length) + originX
-	y = int(sin(angle) * length) + originY
-	canvas.draw_text(number, x - 16, y - 22, fontName, fontSize)
-	canvas.restore_gstate()
-'''	
+def drawNumbers2():
+	for i in range(12):
+		canvas.save_gstate()
+		canvas.translate(centerX, centerY)
+		canvas.rotate(-2 * pi / 12.0 * i)
+		canvas.set_fill_color(0.3, 0.3, 0.3, 0.6)
+		fontSize = 30
+		fontName = 'Helvetica-Bold'
+		number = str(12 if i == 0 else i)
+		width, height = canvas.get_text_size(number, fontName, fontSize)
+		canvas.draw_text(number, -width/2, 115, fontName, fontSize)
+		canvas.restore_gstate()
+
+
+def drawNumbers():
+	for i in range(12):
+		canvas.save_gstate()
+		canvas.set_fill_color(0.3, 0.3, 0.3, 0.6)
+		fontSize = 30
+		fontName = 'Helvetica-Bold'
+		number = str(12 if i == 0 else i)
+		width, height = canvas.get_text_size(number, fontName, fontSize)
+		hour = i
+		angle = -2 * pi / 12.0 * (hour - 3)
+		length = 130
+		rads = radians(angle)
+		x = int(cos(angle) * length) + centerX
+		y = int(sin(angle) * length) + centerY
+		canvas.draw_text(number, x - width/2, y - height/2, fontName, fontSize)
+		canvas.restore_gstate()
 
 						
 def drawHand(width, length, angle):
 	rads = radians(angle)
-	endX = int(cos(angle) * length) + originX
-	endY = int(sin(angle) * length) + originY
+	endX = int(cos(angle) * length) + centerX
+	endY = int(sin(angle) * length) + centerY
+	canvas.set_stroke_color(0.0, 0.0, 0.0, 0.6)
 	canvas.set_line_width(width)
-	canvas.draw_line(originX, originY, endX, endY)			
+	canvas.draw_line(centerX, centerY, endX, endY)			
 
-canvas.set_stroke_color(0.0, 0.0, 0.0, 0.6)
-hourHandLength = 140
-minuteHandLength = 190
 
 def setTime(hour, minute):
+	hourHandLength = clockWidth * 0.28 #90
+	minuteHandLength = clockWidth * 0.36 #112
+	
 	hour += minute / 60
 	hourAngle = -2 * pi / 12.0 * (hour - 3)
 	drawHand(7, hourHandLength, hourAngle)
@@ -71,14 +78,34 @@ def setTime(hour, minute):
 	drawHand(3, minuteHandLength, minuteAngle)
 
 
-hour = random.randint(1, 12)
-minute = random.randrange(0, 59, 5)
-setTime(hour, minute)
-#setTime(7, 45)
+
+totalCorrect = 0
+totalWrong = 0
+totalQuestions = 5
+userInput = input("How many would you like? ")
+if userInput.isdigit():
+	totalQuestions = int(userInput)
+
+for i in range(totalQuestions):
+	
+	drawClockBackground()
+	drawNumbers()
+	
+	hour = random.randint(1, 12)
+	minute = random.randrange(0, 59, 5)
+	setTime(hour, minute)
+	#setTime(7, 45)	
+	
+	userInput = input("What time is it? ")
+	if userInput == str(hour) + ":" + str(minute).zfill(2):
+		totalCorrect += 1
+		print("Correct!")
+	else:
+		totalWrong += 1
+		print("Incorrect.")
 
 
-userInput = input("What time is it? ")
-if userInput == str(hour) + ":" + str(minute).zfill(2):
-	print("Correct!")
-else:
-	print("Incorrect.")
+print("Your score: {0} out of {1}".format(totalCorrect, totalQuestions))
+print(round((totalCorrect/totalQuestions) * 100), "%")
+if(totalCorrect == totalQuestions):
+	print("Perfect score!")
