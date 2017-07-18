@@ -15,7 +15,7 @@ for word in wordList:
 	while not isMatched:
 		speech.say(word)
 		userInput = input("\nSay " + word.strip() + ": ")
-		if userInput == word.strip():
+		if userInput.lower() == word.strip().lower():
 			isMatched = True
 			totalCorrect += 1
 			print("Correct!")
